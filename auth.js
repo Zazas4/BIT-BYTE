@@ -152,7 +152,7 @@ async function tryAutoLogin() {
     if (!token) return;
 
     try {
-        const res = await fetch('http://localhost:5000/api/me', {
+        const res = await fetch('https://bit-byte-3vxa.onrender.com/api/me', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -184,7 +184,7 @@ loginForm.addEventListener('submit', async function(e) {
     if (password.length < 6) return alert('Пароль слишком короткий');
 
     try {
-        const res = await fetch('http://localhost:5000/api/login', {
+        const res = await fetch('https://bit-byte-3vxa.onrender.com/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
@@ -222,7 +222,7 @@ loginForm.addEventListener('submit', async function(e) {
     if (password.length < 6) return alert('Пароль должен быть минимум 6 символов');
 
     try {
-        const res = await fetch('http://localhost:5000/api/register', {
+        const res = await fetch('https://bit-byte-3vxa.onrender.com/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, password })
