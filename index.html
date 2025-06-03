@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIT & BYTE - Магазин комплектующих</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛒</text></svg>">
+    <style>
+        /* Основные стили */
+        body {
+            display: flex;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+        }
+        
+        .sidebar h2 {
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 0;
+        }
+        
+        .category-filter {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 0 10px;
+        }
+        
+        .category-filter button {
+            text-align: left;
+            padding: 12px 15px;
+            border: none;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .category-filter button:hover {
+            background: #34495e;
+        }
+        
+        .category-filter button.active {
+            background: #3498db;
+            font-weight: bold;
+        }
+        
+        /* Новые стили для названия сайта */
+        .site-title {
+            color: #fff;
+            font-size: 28px;
+            font-weight: 800;
+            margin: 0;
+            position: relative;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Arial Black', 'Segoe UI', sans-serif;
+            background: linear-gradient(90deg, #3498db, #9b59b6, #e74c3c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            animation: gradientShift 8s ease infinite;
+            background-size: 300% 300%;
+            padding: 5px 0;
+        }
+
+        .site-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #3498db, #9b59b6, #e74c3c);
+            border-radius: 3px;
+            animation: gradientShift 8s ease infinite;
+            background-size: 300% 300%;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Стили для хедера */
+        .compact-header {
+            background: #2c3e50;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        
+        /* Стили для кнопок корзины */
+        .cart-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        #checkout-btn {
+            background-color: #e67e22;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            flex: 1;
+            transition: background-color 0.3s;
+        }
+        
+        #checkout-btn:hover {
+            background-color: #d35400;
+        }
+        
+        #continue-shopping-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            flex: 1;
+            transition: background-color 0.3s;
+        }
+        
+        #continue-shopping-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        /* Адаптация для мобильных */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 10px 0;
+            }
+            
+            .category-filter {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .category-filter button {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 0;
+            }
+            
+            .compact-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+            
+            .header-top {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .site-title {
+                font-size: 24px;
+                margin-bottom: 10px;
+            }
+        }
+
+        /* Стили для модальных окон и форм авторизации (сохранены из оригинала) */
+        .auth-dropdown.hidden {
+            display: none;
+        }
+        
+        .modal.hidden {
+            display: none;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .close-modal {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+        }
+    </style>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Боковая панель с каталогом -->
+    <div class="sidebar">
+        <h2>Категории</h2>
+        <div class="category-filter">
+            <button class="active" data-category="all">Все товары</button>
+            <button data-category="Процессоры">Процессоры</button>
+            <button data-category="Видеокарты">Видеокарты</button>
+            <button data-category="Материнские платы">Материнские платы</button>
+            <button data-category="Оперативная память">Оперативная память</button>
+            <button data-category="Накопители">Накопители</button>
+            <button data-category="Блоки питания">Блоки питания</button>
+            <button data-category="Охлаждение">Охлаждение</button>
+            <button data-category="Корпуса">Корпуса</button>
+        </div>
+    </div>
+
+    <!-- Основное содержимое -->
+    <div class="main-content">
+        <!-- Хедер -->
+<header class="compact-header">
+  <div class="header-flex">
+    <div class="header-left">
+      <button id="burger-toggle" class="burger-toggle" aria-label="Меню">☰</button>
+      <h1 class="site-title">BIT & BYTE</h1>
+    </div>
+<div class="header-right">
+  <button class="auth-btn" id="auth-btn">Войти</button>
+
+  <div class="auth-dropdown hidden" id="auth-dropdown">
+    <div class="auth-popup-content">
+      <h2>Вход</h2>
+      <form id="login-form">
+        <input type="email" placeholder="Email" required>
+        <input type="password" placeholder="Пароль" required minlength="6">
+        <button type="submit">Войти</button>
+      </form>
+      <div class="auth-links">
+        <a href="#" id="show-register">Регистрация</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="cart-icon-container" id="cart-icon">
+    <img src="images/cart-icon.png" alt="Cart">
+    <span id="cart-counter">0</span>
+  </div>
+</div>
+</header>
+        
+<!-- Выпадающее мобильное меню -->
+<div id="mobile-menu-overlay" class="mobile-overlay"></div>
+<nav id="mobile-category-menu" class="mobile-side-menu">
+    <div class="category-filter">
+        <button class="active" data-category="all">Все товары</button>
+        <button data-category="Процессоры">Процессоры</button>
+        <button data-category="Видеокарты">Видеокарты</button>
+        <button data-category="Материнские платы">Материнские платы</button>
+        <button data-category="Оперативная память">Оперативная память</button>
+        <button data-category="Накопители">Накопители</button>
+        <button data-category="Блоки питания">Блоки питания</button>
+        <button data-category="Охлаждение">Охлаждение</button>
+        <button data-category="Корпуса">Корпуса</button>
+    </div>
+</nav>
+
+        <!-- Основной контент -->
+        <main>
+            <div id="products-container" class="products-container"></div>
+        </main>
+    </div>
+
+    <!-- Модальные окна -->
+    <div id="cart-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Ваша корзина</h2>
+            <div id="cart-items"></div>
+            <div class="cart-total">
+                Итого: <span id="cart-total-price">0</span> ₽
+            </div>
+            <div class="cart-actions">
+                <button id="checkout-btn">Оформить заказ</button>
+                <button id="continue-shopping-btn">Продолжить покупки</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="register-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Регистрация</h2>
+            <form id="register-form">
+                <input type="text" placeholder="Имя" required>
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Пароль" required minlength="6">
+                <button type="submit">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="products.js"></script>
+    <script src="cart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
