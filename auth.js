@@ -361,6 +361,7 @@ localStorage.setItem('currentUser', JSON.stringify(currentUser));
 // Очистка корзины в localStorage и глобальной переменной
 localStorage.removeItem('cart');
 cart.length = 0; // Очистка массива cart
+    updateCart(); 
 
 // Обновление корзины в интерфейсе
 if (typeof updateCart === 'function') {
