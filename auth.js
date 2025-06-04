@@ -365,16 +365,17 @@ deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', func
     // Лог: Проверяем содержимое корзины перед очисткой
     console.log("Корзина перед очисткой:", cart);
 
-    // Очистка корзины в localStorage и глобальной переменной
 // Очистка корзины
 localStorage.removeItem('cart');
 
-if (typeof cart !== 'undefined') {
-    cart.length = 0;
+if (typeof window.cart !== 'undefined') {
+  window.cart.length = 0;
 }
+
 if (typeof updateCart === 'function') {
-    updateCart();
+  updateCart();
 }
+
 
     // Обновление счётчика товаров в корзине
     document.getElementById('cart-counter').textContent = '0';
