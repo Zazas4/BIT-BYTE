@@ -319,56 +319,64 @@ document.getElementById('auth-btn')?.scrollIntoView({ behavior: 'smooth', block:
         });
 
         // Подтверждение заказа
-        deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', function() {
-            const deliveryType = deliveryModal.querySelector('input[name="delivery"]:checked').value;
-            let deliveryAddress = '';
-            let deliveryCost = 0;
+// Подтверждение заказа
+deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', function() {
+    const deliveryType = deliveryModal.querySelector('input[name="delivery"]:checked').value;
+    let deliveryAddress = '';
+    let deliveryCost = 0;
 
-            if (deliveryType === 'delivery') {
-                deliveryAddress = deliveryModal.querySelector('#delivery-address').value.trim();
-                if (!deliveryAddress) {
-                    alert('Пожалуйста, укажите адрес доставки');
-                    return;
-                }
-                deliveryCost = 500;
-            }
+    if (deliveryType === 'delivery') {
+        deliveryAddress = deliveryModal.querySelector('#delivery-address').value.trim();
+        if (!deliveryAddress) {
+            alert('Пожалуйста, укажите адрес доставки');
+            return;
+        }
+        deliveryCost = 500;
+    }
 
-const itemsTotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
-const totalWithDelivery = itemsTotal + deliveryCost;
+    const itemsTotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+    const totalWithDelivery = itemsTotal + deliveryCost;
 
-            const newOrder = {
-                id: Date.now(),
-                date: new Date().toISOString(),
-                total: totalWithDelivery,
-                deliveryType: deliveryType,
-                deliveryAddress: deliveryAddress,
-                deliveryCost: deliveryCost,
-                status: deliveryType === 'pickup' ? 'Готов к выдаче' : 'В обработке',
-                items: cart
-            };
+    const newOrder = {
+        id: Date.now(),
+        date: new Date().toISOString(),
+        total: totalWithDelivery,
+        deliveryType,
+        deliveryAddress,
+        deliveryCost,
+        status: deliveryType === 'pickup' ? 'Готов к выдаче' : 'В обработке',
+        items: cart
+    };
 
-            // Обновляем данные пользователя
-            currentUser.orders = currentUser.orders || [];
-            currentUser.orders.unshift(newOrder);
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            
-            // Очищаем корзину
-            localStorage.removeItem('cart');
-            if (typeof cart !== 'undefined') {
-              cart.length = 0;
-              updateCart?.();
-            }
-            document.getElementById('cart-counter').textContent = '0';
-            deliveryModal.style.display = 'none';
-            document.body.removeChild(deliveryModal);
-            cartModal.classList.add('hidden');
-            
-            alert(`Заказ #${newOrder.id} успешно оформлен! ${deliveryType === 'pickup' 
-                ? 'Вы можете забрать его в нашем магазине.' 
-                : 'Курьер свяжется с вами для уточнения деталей.'}`);
-        });
-    });
+    // Сохраняем заказ в историю пользователя
+    currentUser.orders = currentUser.orders || [];
+    currentUser.orders.unshift(newOrder);
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
 
+    // Очищаем корзину
+    localStorage.removeItem('cart');
+    // Очистить глобальный массив cart
+    if (typeof cart !== 'undefined') {
+        cart.length = 0; // Очищаем массив
+    }
+    
+    // Обновляем корзину в интерфейсе
+    if (typeof updateCart === 'function') {
+        updateCart();
+    }
+
+    // Обновляем счётчик корзины
+    document.getElementById('cart-counter').textContent = '0';
+
+    // Закрываем модальные окна
+    deliveryModal.style.display = 'none';
+    document.body.removeChild(deliveryModal);
+    cartModal.classList.add('hidden');
+
+    alert(`Заказ #${newOrder.id} успешно оформлен! ${deliveryType === 'pickup'
+        ? 'Вы можете забрать его в нашем магазине.'
+        : 'Курьер свяжется с вами для уточнения деталей.'}`);
+});
     // Валидация email
     function validateEmail(email) {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
