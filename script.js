@@ -70,17 +70,6 @@ categoryButtons.forEach(button => {
     // Инициализация
     displayProducts();
 
-    // Проверка авторизации
-    function checkAuth() {
-        const currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
-        if (!currentUser) {
-            alert('Для выполнения этого действия необходимо войти в систему');
-            document.getElementById('auth-btn').click();
-            return false;
-        }
-        return true;
-    }
-
     // Обработчик оформления заказа
 function handleCheckout() {
     const checkoutBtn = document.getElementById('checkout-btn');
@@ -94,13 +83,13 @@ checkoutBtn.addEventListener('click', function() {
         return;
     }
 
-    // Проверка на авторизацию
-    const currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
-    if (!currentUser) {
-        alert('Пожалуйста, войдите в систему для оформления заказа');
-        authDropdown.classList.add('show'); // Открытие модального окна входа
-        return;
-    }
+// Перед оформлением заказа проверим, авторизован ли пользователь
+const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+if (!currentUser) {
+    alert('Для оформления заказа необходимо войти в систему');
+    document.getElementById('auth-btn').click();  // Открытие модального окна для входа
+    return;  // Прерываем оформление заказа, если не авторизован
+}
 
     // Проверка, что пользователь авторизован
     if (!checkAuth()) return;
