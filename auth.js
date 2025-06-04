@@ -256,7 +256,6 @@ loginForm.addEventListener('submit', async function(e) {
     document.getElementById('checkout-btn')?.addEventListener('click', function() {
         const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
         if (cartItems.length === 0) {
-            alert('Ваша корзина пуста');
             return;
         }
 
