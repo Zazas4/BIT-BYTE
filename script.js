@@ -86,22 +86,24 @@ function handleCheckout() {
     const checkoutBtn = document.getElementById('checkout-btn');
     if (!checkoutBtn) return;
 
-    checkoutBtn.addEventListener('click', function() {
-        const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
-        if (cartItems.length === 0) {
-            alert('Ваша корзина пуста');
-            return;
-        }
+    // Оформление заказа
+checkoutBtn.addEventListener('click', function() {
+    const cartItems = JSON.parse(localStorage.getItem('cart') || []);
+    if (cartItems.length === 0) {
+        alert('Ваша корзина пуста');
+        return;
+    }
 
-        // Проверка на авторизацию
-        const currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
-        if (!currentUser) {
-            alert('Для выполнения этого действия необходимо войти в систему');
-            document.getElementById('auth-btn').click();  // Открытие модального окна входа
-            return;
-        }
+    // Проверка на авторизацию
+    const currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+    if (!currentUser) {
+        alert('Пожалуйста, войдите в систему для оформления заказа');
+        authDropdown.classList.add('show'); // Открытие модального окна входа
+        return;
+    }
 
-            if (!checkAuth()) return;
+    // Проверка, что пользователь авторизован
+    if (!checkAuth()) return;
 
             // Создаем модальное окно выбора способа получения
             const deliveryModal = document.createElement('div');
