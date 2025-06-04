@@ -333,8 +333,8 @@ document.getElementById('auth-btn')?.scrollIntoView({ behavior: 'smooth', block:
                 deliveryCost = 500;
             }
 
-            const cartTotal = parseInt(document.getElementById('cart-total-price').textContent) || 0;
-            const totalWithDelivery = cartTotal + deliveryCost;
+const itemsTotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+const totalWithDelivery = itemsTotal + deliveryCost;
 
             const newOrder = {
                 id: Date.now(),
@@ -354,6 +354,10 @@ document.getElementById('auth-btn')?.scrollIntoView({ behavior: 'smooth', block:
             
             // Очищаем корзину
             localStorage.removeItem('cart');
+            if (typeof cart !== 'undefined') {
+              cart.length = 0;
+              updateCart?.();
+            }
             document.getElementById('cart-counter').textContent = '0';
             deliveryModal.style.display = 'none';
             document.body.removeChild(deliveryModal);
