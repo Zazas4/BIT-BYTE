@@ -158,18 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Оформление заказа
-    const checkoutBtn = document.getElementById('checkout-btn');
-    if (checkoutBtn) {
-        checkoutBtn.addEventListener('click', () => {
-            if (cart.length === 0) return;
-            alert(`Заказ оформлен! Сумма: ${document.getElementById('cart-total-price').textContent} ₽`);
-            cart = [];
-            updateCart();
-            saveCart();
-            document.getElementById('cart-modal').style.display = 'none';
-        });
-    }
+
 
     // Добавляем обработчик для кнопки "Продолжить покупки"
     const continueShoppingBtn = document.getElementById('continue-shopping-btn');
