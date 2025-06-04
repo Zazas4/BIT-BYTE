@@ -71,38 +71,38 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Отображение информации в личном кабинете
-// Отображение информации в личном кабинете
-function showAccountInfo() {
-    const accountInfo = accountModal.querySelector('#account-info');
-    const ordersList = accountModal.querySelector('#orders-list');
-    
-    if (!accountInfo || !ordersList) {
-        console.error('Элементы личного кабинета не найдены');
-        return;
+    function showAccountInfo() {
+        const accountInfo = accountModal.querySelector('#account-info');
+        const ordersList = accountModal.querySelector('#orders-list');
+        
+        if (!accountInfo || !ordersList) {
+            console.error('Элементы личного кабинета не найдены');
+            return;
+        }
+
+        if (currentUser) {
+            accountInfo.innerHTML = `
+                <div class="user-info">
+                    <p><strong>Имя:</strong> ${currentUser.name || 'Не указано'}</p>
+                    <p><strong>Email:</strong> ${currentUser.email}</p>
+                    <p><strong>Дата регистрации:</strong> ${currentUser.registrationDate || new Date().toLocaleDateString()}</p>
+                </div>
+            `;
+            
+            if (currentUser.orders && currentUser.orders.length > 0) {
+                ordersList.innerHTML = currentUser.orders.map(order => `
+                    <div class="order-item">
+                        <p><strong>Заказ #${order.id}</strong> (${new Date(order.date).toLocaleDateString()})</p>
+                        <p>Сумма: ${order.total} ₽</p>
+                        <p>Статус: ${order.status || 'Завершен'}</p>
+                    </div>
+                `).join('');
+            } else {
+                ordersList.innerHTML = '<p>У вас пока нет заказов</p>';
+            }
+        }
     }
 
-    if (currentUser) {
-        accountInfo.innerHTML = `
-            <div class="user-info">
-                <p><strong>Имя:</strong> ${currentUser.name || 'Не указано'}</p>
-                <p><strong>Email:</strong> ${currentUser.email}</p>
-                <p><strong>Дата регистрации:</strong> ${currentUser.registrationDate || new Date().toLocaleDateString()}</p>
-            </div>
-        `;
-        
-if (currentUser.orders && currentUser.orders.length > 0) {
-    ordersList.innerHTML = currentUser.orders.map(order => `
-        <div class="order-item">
-            <p><strong>Заказ #${order.id}</strong> (${new Date(order.date).toLocaleDateString()})</p>
-            <p>Сумма: ${order.total} ₽</p> <!-- Добавляем вывод суммы -->
-            <p>Статус: ${order.status || 'Завершен'}</p>
-        </div>
-    `).join('');
-} else {
-    ordersList.innerHTML = '<p>У вас пока нет заказов</p>';
-}
-    }
-}
     // Инициализация
     updateAuthButton();
 
@@ -120,14 +120,16 @@ authBtn.addEventListener('click', function(e) {
   }
 });
 
-    // Кнопка выхода в личном кабинете
-    accountModal.querySelector('#logout-btn').addEventListener('click', function() {
-        currentUser = null;
-        localStorage.removeItem('currentUser');
-        updateAuthButton();
-        accountModal.style.display = 'none';
-        alert('Вы успешно вышли из системы');
-    });
+// Кнопка выхода в личном кабинете
+accountModal.querySelector('#logout-btn').addEventListener('click', function() {
+    // Очищаем данные пользователя и токен из localStorage
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('token');  // Удаляем токен
+    updateAuthButton();  // Обновляем интерфейс
+    accountModal.style.display = 'none';  // Закрываем личный кабинет
+    alert('Вы успешно вышли из системы');
+});
 
     // Закрытие модальных окон
     closeModalButtons.forEach(btn => {
@@ -201,7 +203,6 @@ loginForm.addEventListener('submit', async function(e) {
         currentUser = data.user;
 
         updateAuthButton();
-        authDropdown.classList.add('show');
         this.reset();
         alert(`Добро пожаловать, ${currentUser.name}!`);
     } catch (err) {
@@ -249,15 +250,18 @@ loginForm.addEventListener('submit', async function(e) {
 
     // Оформление заказа
     document.getElementById('checkout-btn')?.addEventListener('click', function() {
-        const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
-        if (cartItems.length === 0) {
-            alert('Ваша корзина пуста');
-            return;
-        }
+const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+if (!Array.isArray(cart) || cart.length === 0) {
+    alert('Корзина пуста или повреждена.');
+    return;
+}
 
         if (!currentUser) {
-            alert('Пожалуйста, войдите в систему для оформления заказа');
-            authDropdown.classList.add('show');
+authDropdown.classList.remove('hidden');
+authDropdown.classList.add('show');
+
+// Прокрутка к кнопке входа (по желанию)
+document.getElementById('auth-btn')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
@@ -330,8 +334,8 @@ loginForm.addEventListener('submit', async function(e) {
                 deliveryCost = 500;
             }
 
-            const cartTotal = parseInt(document.getElementById('cart-total-price').textContent) || 0;
-            const totalWithDelivery = cartTotal + deliveryCost;
+const itemsTotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+const totalWithDelivery = itemsTotal + deliveryCost;
 
             const newOrder = {
                 id: Date.now(),
@@ -341,16 +345,20 @@ loginForm.addEventListener('submit', async function(e) {
                 deliveryAddress: deliveryAddress,
                 deliveryCost: deliveryCost,
                 status: deliveryType === 'pickup' ? 'Готов к выдаче' : 'В обработке',
-                items: cartItems
+                items: cart
             };
 
             // Обновляем данные пользователя
-currentUser.orders = currentUser.orders || [];
-currentUser.orders.unshift(newOrder);  // Добавляем новый заказ в начало массива
-localStorage.setItem('currentUser', JSON.stringify(currentUser));  // Сохраняем обновленного пользователя
+            currentUser.orders = currentUser.orders || [];
+            currentUser.orders.unshift(newOrder);
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
             
             // Очищаем корзину
             localStorage.removeItem('cart');
+            if (typeof cart !== 'undefined') {
+              cart.length = 0;
+              updateCart?.();
+            }
             document.getElementById('cart-counter').textContent = '0';
             deliveryModal.style.display = 'none';
             document.body.removeChild(deliveryModal);
