@@ -29,6 +29,13 @@ function saveCart() {
 }
 
 function addToCart(productId, buyNow = false) {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    if (!currentUser) {
+        alert('Для добавления товара в корзину необходимо войти в систему');
+        return;
+    }
+
     const product = products.find(p => p.id === productId);
 
     if (!product) {
@@ -54,6 +61,7 @@ function addToCart(productId, buyNow = false) {
     }
 }
 
+
 // вызвать в начале
 loadCart();
 // Функция удаления из корзины
@@ -65,12 +73,10 @@ function removeFromCart(productId) {
 
 // Функция обновления отображения корзины
 function updateCart() {
-    // Обновляем счетчик
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     const cartCounter = document.getElementById('cart-counter');
     if (cartCounter) cartCounter.textContent = totalItems;
 
-    // Обновляем содержимое корзины
     const cartItemsElement = document.getElementById('cart-items');
     if (cartItemsElement) {
         cartItemsElement.innerHTML = '';
@@ -86,9 +92,7 @@ function updateCart() {
             const cartItemElement = document.createElement('div');
             cartItemElement.className = 'cart-item';
             cartItemElement.innerHTML = `
-                <img src="${item.image || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MDAiIGhlaWdodD0iNTAwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2NjYyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0xOCA2SDZhMiAyIDAgMCAwLTIgMnYxMGEyIDIgMCAwIDAgMiAyaDEyYTIgMiAwIDAgMCAyLTJWNnptMCA0VjZhMiAyIDAgMCAwLTItMkg2YTIgMiAwIDAgMC0yIDJ2NCI+PC9wYXRoPjxwYXRoIGQ9Ik0xNCAxM2EzIDMgMCAxIDEtNiAwIj48L3BhdGg+PC9zdmc+'}" 
-                     alt="${item.name}"
-                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MDAiIGhlaWdodD0iNTAwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2NjYyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0xOCA2SDZhMiAyIDAgMCAwLTIgMnYxMGEyIDIgMCAwIDAgMiAyaDEyYTIgMiAwIDAgMCAyLTJWNnptMCA0VjZhMiAyIDAgMCAwLTItMkg2YTIgMiAwIDAgMC0yIDJ2NCI+PC9wYXRoPjxwYXRoIGQ9Ik0xNCAxM2EzIDMgMCAxIDEtNiAwIj48L3BhdGg+PC9zdmc+'">
+                <img src="${item.image || 'data:image/svg+xml;base64,...'}" alt="${item.name}">
                 <div class="cart-item-info">
                     <div>${item.name}</div>
                     <div>${item.quantity} × ${item.price.toLocaleString()} ₽</div>
@@ -99,10 +103,10 @@ function updateCart() {
             cartItemsElement.appendChild(cartItemElement);
         });
 
-        // Обновляем итоговую сумму
+        // Обновляем итоговую сумму товаров (без доставки)
         const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const totalPriceElement = document.getElementById('cart-total-price');
-        if (totalPriceElement) totalPriceElement.textContent = totalPrice.toLocaleString();
+        if (totalPriceElement) totalPriceElement.textContent = totalPrice.toLocaleString(); // Сумма товаров
     }
 }
 
