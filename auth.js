@@ -265,7 +265,10 @@ authDropdown.classList.add('show');
 document.getElementById('auth-btn')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
-
+const cartModal = document.getElementById('cart-modal');
+if (cartModal && !cartModal.classList.contains('hidden')) {
+    cartModal.classList.add('hidden');
+}
         // Создаем модальное окно выбора способа доставки
         const deliveryModal = document.createElement('div');
         deliveryModal.id = 'delivery-modal';
@@ -355,19 +358,17 @@ currentUser.orders = currentUser.orders || [];
 currentUser.orders.unshift(newOrder);
 localStorage.setItem('currentUser', JSON.stringify(currentUser));
 
-// ✅ Очищаем корзину
+// Очистка корзины в localStorage и глобальной переменной
 localStorage.removeItem('cart');
-cart.length = 0; // Очистка корзины в переменной cart
+cart.length = 0; // Очистка массива cart
 
-// ✅ Обновление корзины в интерфейсе
+// Обновление корзины в интерфейсе
 if (typeof updateCart === 'function') {
-    updateCart();
+    updateCart();  // Обновление интерфейса корзины
 }
 
 // Обновление счётчика товаров в корзине
-const cartCounter = document.getElementById('cart-counter');
-if (cartCounter) cartCounter.textContent = '0';
-
+document.getElementById('cart-counter').textContent = '0';
 // Закрытие модальных окон
 deliveryModal.style.display = 'none';
 document.body.removeChild(deliveryModal);
