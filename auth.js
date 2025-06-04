@@ -256,8 +256,11 @@ loginForm.addEventListener('submit', async function(e) {
         }
 
         if (!currentUser) {
-            alert('Пожалуйста, войдите в систему для оформления заказа');
-            authDropdown.classList.add('show');
+authDropdown.classList.remove('hidden');
+authDropdown.classList.add('show');
+
+// Прокрутка к кнопке входа (по желанию)
+document.getElementById('auth-btn')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
