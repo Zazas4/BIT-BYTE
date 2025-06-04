@@ -70,29 +70,41 @@ categoryButtons.forEach(button => {
     // Инициализация
     displayProducts();
 
-    // Обработчик оформления заказа
-function handleCheckout() {
-    const checkoutBtn = document.getElementById('checkout-btn');
-    if (!checkoutBtn) return;
+    // Проверка авторизации
+    function checkAuth() {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        if (!currentUser) {
+            alert('Для выполнения этого действия необходимо войти в систему');
+            document.getElementById('auth-btn').click();
+            return false;
+        }
+        return true;
+    }
 
-    // Оформление заказа
-checkoutBtn.addEventListener('click', function() {
-    const cartItems = JSON.parse(localStorage.getItem('cart') || []);
-    if (cartItems.length === 0) {
-        alert('Ваша корзина пуста');
+    // Обработчик оформления заказа
+    function handleCheckout() {
+        const checkoutBtn = document.getElementById('checkout-btn');
+        if (!checkoutBtn) return;
+
+        checkoutBtn.addEventListener('click', function() {
+        try {
+    const rawCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    cartItems = Array.isArray(rawCart) ? rawCart : [];
+} catch (e) {
+    console.warn('Ошибка чтения корзины:', e);
+    cartItems = [];
+    localStorage.setItem('cart', '[]');
+}
+            if (cartItems.length === 0) {
+                return;
+            }
+                if (!currentUser) {
+        alert('Пожалуйста, войдите в систему для оформления заказа');
+        authDropdown.classList.add('show');
         return;
     }
 
-// Перед оформлением заказа проверим, авторизован ли пользователь
-const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-if (!currentUser) {
-    alert('Для оформления заказа необходимо войти в систему');
-    document.getElementById('auth-btn').click();  // Открытие модального окна для входа
-    return;  // Прерываем оформление заказа, если не авторизован
-}
-
-    // Проверка, что пользователь авторизован
-    if (!checkAuth()) return;
+            if (!checkAuth()) return;
 
             // Создаем модальное окно выбора способа получения
             const deliveryModal = document.createElement('div');
