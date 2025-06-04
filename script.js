@@ -201,6 +201,8 @@ categoryButtons.forEach(button => {
                 
                 // Очищаем корзину
                 localStorage.removeItem('cart');
+                cart = [];
+                updateCart();
                 document.getElementById('cart-counter').textContent = '0';
                 deliveryModal.style.display = 'none';
                 document.body.removeChild(deliveryModal);
