@@ -365,7 +365,7 @@ deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', func
     // Лог: Проверяем содержимое корзины перед очисткой
     console.log("Корзина перед очисткой:", cart);
 
-// Очистка корзины и обновление интерфейса
+// Очистка корзины
 localStorage.removeItem('cart');
 
 // Очистка глобальной переменной cart
@@ -375,11 +375,12 @@ if (typeof window.cart !== 'undefined') {
 
 // Обновление интерфейса корзины
 if (typeof updateCart === 'function') {
-    updateCart();
+    updateCart(); // Вызываем обновление интерфейса корзины
 }
 
 // Обновление счётчика товаров в корзине
-document.getElementById('cart-counter').textContent = '0';
+const cartCounter = document.getElementById('cart-counter');
+if (cartCounter) cartCounter.textContent = '0';
 
     // Закрытие модальных окон
     deliveryModal.style.display = 'none';
