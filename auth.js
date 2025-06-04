@@ -354,33 +354,24 @@ deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', func
         items: cart
     };
 
-    // Лог: Проверяем содержимое корзины перед оформлением заказа
-    console.log("Корзина перед оформлением заказа:", cart);
-
     // Сохраняем заказ в историю пользователя
     currentUser.orders = currentUser.orders || [];
     currentUser.orders.unshift(newOrder);
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
 
-    // Лог: Проверяем содержимое корзины перед очисткой
-    console.log("Корзина перед очисткой:", cart);
+    // Очистка корзины из localStorage и глобальной переменной cart
+    localStorage.removeItem('cart');
+    if (typeof window.cart !== 'undefined') {
+        window.cart.length = 0;
+    }
 
-// Очистка корзины
-localStorage.removeItem('cart');
+    // Обновление интерфейса корзины
+    if (typeof updateCart === 'function') {
+        updateCart();  // Обновление корзины
+    }
 
-// Очистка глобальной переменной cart
-if (typeof window.cart !== 'undefined') {
-    window.cart.length = 0;
-}
-
-// Обновление интерфейса корзины
-if (typeof updateCart === 'function') {
-    updateCart(); // Вызываем обновление интерфейса корзины
-}
-
-// Обновление счётчика товаров в корзине
-const cartCounter = document.getElementById('cart-counter');
-if (cartCounter) cartCounter.textContent = '0';
+    // Обновление счётчика товаров в корзине
+    document.getElementById('cart-counter').textContent = '0';
 
     // Закрытие модальных окон
     deliveryModal.style.display = 'none';
