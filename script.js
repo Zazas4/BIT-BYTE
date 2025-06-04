@@ -82,64 +82,70 @@ categoryButtons.forEach(button => {
     }
 
     // Обработчик оформления заказа
-    function handleCheckout() {
-        const checkoutBtn = document.getElementById('checkout-btn');
-        if (!checkoutBtn) return;
+   function handleCheckout() {
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (!checkoutBtn) return;
 
-        checkoutBtn.addEventListener('click', function() {
+    checkoutBtn.addEventListener('click', function() {
         try {
-    const rawCart = JSON.parse(localStorage.getItem('cart') || '[]');
-    cartItems = Array.isArray(rawCart) ? rawCart : [];
-} catch (e) {
-    console.warn('Ошибка чтения корзины:', e);
-    cartItems = [];
-    localStorage.setItem('cart', '[]');
-}
-            if (cartItems.length === 0) {
-                alert('Ваша корзина пуста');
-                return;
-            }
+            const rawCart = JSON.parse(localStorage.getItem('cart') || '[]');
+            cartItems = Array.isArray(rawCart) ? rawCart : [];
+        } catch (e) {
+            console.warn('Ошибка чтения корзины:', e);
+            cartItems = [];
+            localStorage.setItem('cart', '[]');
+        }
 
-            if (!checkAuth()) return;
+        if (cartItems.length === 0) {
+            alert('Ваша корзина пуста');
+            return;
+        }
 
-            // Создаем модальное окно выбора способа получения
-            const deliveryModal = document.createElement('div');
-            deliveryModal.id = 'delivery-modal';
-            deliveryModal.className = 'modal';
-            deliveryModal.innerHTML = `
-                <div class="modal-content">
-                    <span class="close-modal">&times;</span>
-                    <h2>Способ получения</h2>
-                    <div class="delivery-options">
-                        <div class="delivery-option">
-                            <input type="radio" id="pickup" name="delivery" value="pickup" checked>
-                            <label for="pickup">
-                                <h3>Самовывоз</h3>
-                                <p>Заберите ваш заказ из нашего магазина</p>
-                                <p class="price">Бесплатно</p>
-                            </label>
-                        </div>
-                        <div class="delivery-option">
-                            <input type="radio" id="delivery" name="delivery" value="delivery">
-                            <label for="delivery">
-                                <h3>Доставка</h3>
-                                <p>Курьерская доставка до двери</p>
-                                <p class="price">500 ₽</p>
-                            </label>
-                        </div>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) {
+            alert('Для оформления заказа необходимо войти в систему.');
+            document.getElementById('auth-btn').click(); // Кликаем по кнопке входа
+            return;
+        }
+
+        // Создаем модальное окно для выбора способа получения
+        const deliveryModal = document.createElement('div');
+        deliveryModal.id = 'delivery-modal';
+        deliveryModal.className = 'modal';
+        deliveryModal.innerHTML = `
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>Способ получения</h2>
+                <div class="delivery-options">
+                    <div class="delivery-option">
+                        <input type="radio" id="pickup" name="delivery" value="pickup" checked>
+                        <label for="pickup">
+                            <h3>Самовывоз</h3>
+                            <p>Заберите ваш заказ из нашего магазина</p>
+                            <p class="price">Бесплатно</p>
+                        </label>
                     </div>
-                    <div id="delivery-address-container" class="hidden">
-                        <h3>Адрес доставки</h3>
-                        <input type="text" id="delivery-address" placeholder="Введите ваш адрес" required>
+                    <div class="delivery-option">
+                        <input type="radio" id="delivery" name="delivery" value="delivery">
+                        <label for="delivery">
+                            <h3>Доставка</h3>
+                            <p>Курьерская доставка до двери</p>
+                            <p class="price">500 ₽</p>
+                        </label>
                     </div>
-                    <button id="confirm-order-btn" class="confirm-order-btn">Подтвердить заказ</button>
                 </div>
-            `;
-            document.body.appendChild(deliveryModal);
+                <div id="delivery-address-container" class="hidden">
+                    <h3>Адрес доставки</h3>
+                    <input type="text" id="delivery-address" placeholder="Введите ваш адрес" required>
+                </div>
+                <button id="confirm-order-btn" class="confirm-order-btn">Подтвердить заказ</button>
+            </div>
+        `;
+        document.body.appendChild(deliveryModal);
 
-            // Показываем модальное окно
-            deliveryModal.style.display = 'block';
-            document.getElementById('cart-modal').classList.add('hidden');
+        // Показываем модальное окно
+        deliveryModal.style.display = 'block';
+        document.getElementById('cart-modal').classList.add('hidden');
 
             // Обработка выбора способа доставки
             deliveryModal.querySelectorAll('input[name="delivery"]').forEach(radio => {
