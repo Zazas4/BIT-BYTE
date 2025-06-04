@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+
 // Отображение информации в личном кабинете
 function showAccountInfo() {
     const accountInfo = accountModal.querySelector('#account-info');
