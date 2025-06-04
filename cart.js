@@ -65,20 +65,13 @@ function removeFromCart(productId) {
 
 // Функция обновления отображения корзины
 function updateCart() {
-    console.log("Обновление корзины, содержимое:", cart); // Логирование для отладки
-
-    // Обновляем счётчик товаров
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const cartCounter = document.getElementById('cart-counter');
-    if (cartCounter) cartCounter.textContent = totalItems;
-
     // Обновляем содержимое корзины в модалке
     const cartItemsElement = document.getElementById('cart-items');
     if (cartItemsElement) {
         cartItemsElement.innerHTML = '';  // Очистка корзины в DOM
 
         if (cart.length === 0) {
-            cartItemsElement.innerHTML = '<p>Корзина пуста</p>';  // Сообщение, если корзина пуста
+            cartItemsElement.innerHTML = '<p>Корзина пуста</p>';  // Сообщение о пустой корзине
             const totalPriceElement = document.getElementById('cart-total-price');
             if (totalPriceElement) totalPriceElement.textContent = '0 ₽';
             return;
