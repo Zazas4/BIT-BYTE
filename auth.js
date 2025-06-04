@@ -323,7 +323,7 @@ if (cartModal && !cartModal.classList.contains('hidden')) {
             cartModal.classList.remove('hidden');
         });
 
-        // Подтверждение заказа
+
 // Подтверждение заказа
 deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', function () {
     const deliveryType = deliveryModal.querySelector('input[name="delivery"]:checked').value;
@@ -353,31 +353,29 @@ deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', func
         items: cart
     };
 
-// Сохраняем заказ в историю пользователя
-currentUser.orders = currentUser.orders || [];
-currentUser.orders.unshift(newOrder);
-localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    // Сохраняем заказ в историю пользователя
+    currentUser.orders = currentUser.orders || [];
+    currentUser.orders.unshift(newOrder);
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
 
-// Очистка корзины в localStorage и глобальной переменной
-localStorage.removeItem('cart');
-cart.length = 0; // Очистка массива cart
-    updateCart(); 
+    // Очистка корзины в localStorage и глобальной переменной
+    localStorage.removeItem('cart');  // Очистка корзины из localStorage
+    cart.length = 0;  // Очистка массива cart
 
-// Обновление корзины в интерфейсе
-if (typeof updateCart === 'function') {
-    updateCart();  // Обновление интерфейса корзины
-}
+    // Обновление интерфейса корзины
+    updateCart();  // Убедитесь, что вызывается эта функция для обновления интерфейса
 
-// Обновление счётчика товаров в корзине
-document.getElementById('cart-counter').textContent = '0';
-// Закрытие модальных окон
-deliveryModal.style.display = 'none';
-document.body.removeChild(deliveryModal);
-cartModal.classList.add('hidden');
+    // Обновление счётчика товаров в корзине
+    document.getElementById('cart-counter').textContent = '0';
 
-alert(`Заказ #${newOrder.id} успешно оформлен! ${deliveryType === 'pickup'
-    ? 'Вы можете забрать его в нашем магазине.'
-    : 'Курьер свяжется с вами для уточнения деталей.'}`);
+    // Закрытие модальных окон
+    deliveryModal.style.display = 'none';
+    document.body.removeChild(deliveryModal);
+    cartModal.classList.add('hidden');
+
+    alert(`Заказ #${newOrder.id} успешно оформлен! ${deliveryType === 'pickup'
+        ? 'Вы можете забрать его в нашем магазине.'
+        : 'Курьер свяжется с вами для уточнения деталей.'}`);
 });
     // Валидация email
     function validateEmail(email) {
