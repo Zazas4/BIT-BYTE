@@ -249,11 +249,11 @@ loginForm.addEventListener('submit', async function(e) {
 
     // Оформление заказа
     document.getElementById('checkout-btn')?.addEventListener('click', function() {
-        const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
-        if (cartItems.length === 0) {
-            alert('Ваша корзина пуста');
-            return;
-        }
+const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+if (!Array.isArray(cart) || cart.length === 0) {
+    alert('Корзина пуста или повреждена.');
+    return;
+}
 
         if (!currentUser) {
 authDropdown.classList.remove('hidden');
@@ -344,7 +344,7 @@ document.getElementById('auth-btn')?.scrollIntoView({ behavior: 'smooth', block:
                 deliveryAddress: deliveryAddress,
                 deliveryCost: deliveryCost,
                 status: deliveryType === 'pickup' ? 'Готов к выдаче' : 'В обработке',
-                items: cartItems
+                items: cart
             };
 
             // Обновляем данные пользователя
