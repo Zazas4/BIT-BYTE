@@ -65,6 +65,14 @@ function removeFromCart(productId) {
 
 // Функция обновления отображения корзины
 function updateCart() {
+    // Лог: Проверка содержимого корзины
+    console.log("Обновление корзины, содержимое:", cart);
+
+    // Обновляем счётчик товаров в корзине
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const cartCounter = document.getElementById('cart-counter');
+    if (cartCounter) cartCounter.textContent = totalItems;
+
     // Обновляем содержимое корзины в модалке
     const cartItemsElement = document.getElementById('cart-items');
     if (cartItemsElement) {
