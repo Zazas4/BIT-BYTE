@@ -65,10 +65,9 @@ function removeFromCart(productId) {
 
 // Функция обновления отображения корзины
 function updateCart() {
-    // Лог: Проверка содержимого корзины
-    console.log("Обновление корзины, содержимое:", cart);
+    console.log("Обновление корзины, содержимое:", cart); // Логируем для отладки
 
-    // Обновляем счётчик товаров в корзине
+    // Обновляем счётчик товаров
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     const cartCounter = document.getElementById('cart-counter');
     if (cartCounter) cartCounter.textContent = totalItems;
@@ -79,7 +78,7 @@ function updateCart() {
         cartItemsElement.innerHTML = '';  // Очистка корзины в DOM
 
         if (cart.length === 0) {
-            cartItemsElement.innerHTML = '<p>Корзина пуста</p>';  // Сообщение о пустой корзине
+            cartItemsElement.innerHTML = '<p>Корзина пуста</p>';  // Сообщение, если корзина пуста
             const totalPriceElement = document.getElementById('cart-total-price');
             if (totalPriceElement) totalPriceElement.textContent = '0 ₽';
             return;
@@ -109,7 +108,6 @@ function updateCart() {
         if (totalPriceElement) totalPriceElement.textContent = totalPrice.toLocaleString() + ' ₽';
     }
 }
-
 
 // Функция анимации добавления в корзину
 function showAddToCartAnimation(productId) {
