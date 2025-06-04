@@ -325,6 +325,7 @@ if (cartModal && !cartModal.classList.contains('hidden')) {
 
 
 // Подтверждение заказа
+// Подтверждение заказа
 deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', function () {
     const deliveryType = deliveryModal.querySelector('input[name="delivery"]:checked').value;
     let deliveryAddress = '';
@@ -353,17 +354,26 @@ deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', func
         items: cart
     };
 
+    // Лог: Проверяем содержимое корзины перед оформлением заказа
+    console.log("Корзина перед оформлением заказа:", cart);
+
     // Сохраняем заказ в историю пользователя
     currentUser.orders = currentUser.orders || [];
     currentUser.orders.unshift(newOrder);
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
 
+    // Лог: Проверяем содержимое корзины перед очисткой
+    console.log("Корзина перед очисткой:", cart);
+
     // Очистка корзины в localStorage и глобальной переменной
-    localStorage.removeItem('cart');  // Очистка корзины из localStorage
-    cart.length = 0;  // Очистка массива cart
+    localStorage.removeItem('cart');
+    cart.length = 0; // Очистка массива cart
+
+    // Лог: Проверяем содержимое корзины после очистки
+    console.log("Корзина после очистки:", cart);
 
     // Обновление интерфейса корзины
-    updateCart();  // Убедитесь, что вызывается эта функция для обновления интерфейса
+    updateCart(); 
 
     // Обновление счётчика товаров в корзине
     document.getElementById('cart-counter').textContent = '0';
