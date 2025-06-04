@@ -103,6 +103,27 @@ categoryButtons.forEach(button => {
         document.getElementById('auth-dropdown').classList.add('hidden');
     });
 });
+document.addEventListener('DOMContentLoaded', function() {
+    // Обработчик кнопки добавления товара в корзину
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = parseInt(this.dataset.productId); // Получаем ID товара
+            addToCart(productId);
+        });
+    });
+
+    // Открытие корзины
+    document.getElementById('cart-btn').addEventListener('click', function() {
+        document.getElementById('cart-modal').classList.remove('hidden');
+    });
+
+    // Закрытие корзины
+    document.querySelector('.close-modal').addEventListener('click', function() {
+        document.getElementById('cart-modal').classList.add('hidden');
+    });
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const burger = document.getElementById('burger-toggle');
     const menu = document.getElementById('mobile-category-menu');
