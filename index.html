@@ -351,23 +351,87 @@
     <script src="cart.js"></script>
     <script src="script.js"></script>
     <script>
-        document.getElementById('checkout-btn').addEventListener('click', function() {
-    if (cart.length === 0) {
-        alert("Корзина пуста!");
-        return;
+     document.addEventListener('DOMContentLoaded', function() {
+    // Обработка выбора способа доставки
+    const deliveryModal = document.getElementById('delivery-modal');
+    if (deliveryModal) {
+        deliveryModal.querySelectorAll('input[name="delivery"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const addressContainer = deliveryModal.querySelector('#delivery-address-container');
+                addressContainer.classList.toggle('hidden', this.value !== 'delivery');
+            });
+        });
     }
 
-    // Очистка корзины
-    localStorage.removeItem('cart');
-    cart.length = 0;
+    // Обработчик для оформления заказа
+    document.getElementById('checkout-btn').addEventListener('click', function() {
+        if (cart.length === 0) {
+            alert("Корзина пуста!");
+            return;
+        }
 
-    // Обновление интерфейса
-    updateCart();  // Важный шаг для обновления отображения корзины
+        // Проверяем выбран ли способ доставки
+        const deliveryType = document.querySelector('input[name="delivery"]:checked');
+        if (!deliveryType) {
+            alert("Пожалуйста, выберите способ получения!");
+            return;
+        }
 
-    // Дополнительные действия, например, закрытие окна
-    document.getElementById('cart-modal').style.display = 'none';
+        // Если выбран способ доставки, проверяем введён ли адрес для доставки
+        if (deliveryType.value === 'delivery') {
+            const deliveryAddress = document.getElementById('delivery-address').value.trim();
+            if (!deliveryAddress) {
+                alert("Пожалуйста, введите адрес доставки!");
+                return;
+            }
+        }
 
-    alert("Заказ оформлен!");
+        // Оформляем заказ
+        const cartTotal = parseInt(document.getElementById('cart-total-price').textContent) || 0;
+        const totalWithDelivery = cartTotal + (deliveryType.value === 'delivery' ? 500 : 0);
+
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) {
+            alert('Ошибка авторизации. Пожалуйста, войдите снова.');
+            return;
+        }
+
+        const newOrder = {
+            id: Date.now(),
+            date: new Date().toISOString(),
+            total: totalWithDelivery,
+            deliveryType: deliveryType.value,
+            deliveryAddress: deliveryType.value === 'delivery' ? deliveryAddress : '',
+            deliveryCost: deliveryType.value === 'delivery' ? 500 : 0,
+            status: deliveryType.value === 'pickup' ? 'Готов к выдаче' : 'В обработке',
+            items: cart
+        };
+
+        // Сохраняем заказ в истории
+        currentUser.orders = currentUser.orders || [];
+        currentUser.orders.unshift(newOrder);
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+        // Очистка корзины
+        localStorage.removeItem('cart');
+        document.getElementById('cart-counter').textContent = '0';
+        updateCart();  // Обновляем корзину
+
+        // Закрытие модального окна и сообщение об успешном заказе
+        alert(`Заказ #${newOrder.id} успешно оформлен!`);
+        deliveryModal.style.display = 'none';
+        document.body.removeChild(deliveryModal);
+        document.getElementById('cart-modal').classList.add('hidden');
+    });
+
+    // Закрытие модального окна
+    const closeModalButtons = document.querySelectorAll('.close-modal');
+    closeModalButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            deliveryModal.style.display = 'none';
+            document.body.removeChild(deliveryModal);
+        });
+    });
 });
     </script>
 </body>
