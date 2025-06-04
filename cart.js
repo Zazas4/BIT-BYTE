@@ -54,42 +54,59 @@ function addToCart(productId, buyNow = false) {
     }
 }
 
+// вызвать в начале
+loadCart();
+// Функция удаления из корзины
 function removeFromCart(productId) {
     cart = cart.filter(item => item.id !== productId);
     updateCart();
     saveCart();
 }
 
+// Функция обновления отображения корзины
 function updateCart() {
+    // Обновляем счетчик
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const cartCounter = document.getElementById('cart-counter');
+    if (cartCounter) cartCounter.textContent = totalItems;
+
+    // Обновляем содержимое корзины
     const cartItemsElement = document.getElementById('cart-items');
-    const totalPriceElement = document.getElementById('cart-total-price');
-    
-    cartItemsElement.innerHTML = '';
-    if (cart.length === 0) {
-        cartItemsElement.innerHTML = '<p>Корзина пуста</p>';
-        totalPriceElement.textContent = '0 ₽';
-        return;
+    if (cartItemsElement) {
+        cartItemsElement.innerHTML = '';
+
+        if (cart.length === 0) {
+            cartItemsElement.innerHTML = '<p>Корзина пуста</p>';
+            const totalPriceElement = document.getElementById('cart-total-price');
+            if (totalPriceElement) totalPriceElement.textContent = '0';
+            return;
+        }
+
+        cart.forEach(item => {
+            const cartItemElement = document.createElement('div');
+            cartItemElement.className = 'cart-item';
+            cartItemElement.innerHTML = `
+                <img src="${item.image || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MDAiIGhlaWdodD0iNTAwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2NjYyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0xOCA2SDZhMiAyIDAgMCAwLTIgMnYxMGEyIDIgMCAwIDAgMiAyaDEyYTIgMiAwIDAgMCAyLTJWNnptMCA0VjZhMiAyIDAgMCAwLTItMkg2YTIgMiAwIDAgMC0yIDJ2NCI+PC9wYXRoPjxwYXRoIGQ9Ik0xNCAxM2EzIDMgMCAxIDEtNiAwIj48L3BhdGg+PC9zdmc+'}" 
+                     alt="${item.name}"
+                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MDAiIGhlaWdodD0iNTAwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2NjYyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0xOCA2SDZhMiAyIDAgMCAwLTIgMnYxMGEyIDIgMCAwIDAgMiAyaDEyYTIgMiAwIDAgMCAyLTJWNnptMCA0VjZhMiAyIDAgMCAwLTItMkg2YTIgMiAwIDAgMC0yIDJ2NCI+PC9wYXRoPjxwYXRoIGQ9Ik0xNCAxM2EzIDMgMCAxIDEtNiAwIj48L3BhdGg+PC9zdmc+'">
+                <div class="cart-item-info">
+                    <div>${item.name}</div>
+                    <div>${item.quantity} × ${item.price.toLocaleString()} ₽</div>
+                </div>
+                <div class="cart-item-price">${(item.quantity * item.price).toLocaleString()} ₽</div>
+                <button class="cart-item-remove" onclick="removeFromCart(${item.id})">×</button>
+            `;
+            cartItemsElement.appendChild(cartItemElement);
+        });
+
+        // Обновляем итоговую сумму
+        const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const totalPriceElement = document.getElementById('cart-total-price');
+        if (totalPriceElement) totalPriceElement.textContent = totalPrice.toLocaleString();
     }
-
-    cart.forEach(item => {
-        const cartItemElement = document.createElement('div');
-        cartItemElement.className = 'cart-item';
-        cartItemElement.innerHTML = `
-            <div>${item.name}</div>
-            <div>${item.quantity} × ${item.price}</div>
-            <button onclick="removeFromCart(${item.id})">Удалить</button>
-        `;
-        cartItemsElement.appendChild(cartItemElement);
-    });
-
-    const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    totalPriceElement.textContent = totalPrice.toLocaleString() + ' ₽';
 }
 
-function saveCart() {
-    localStorage.setItem('cart', JSON.stringify(cart));
-}
-
+// Функция анимации добавления в корзину
 function showAddToCartAnimation(productId) {
     const button = document.querySelector(`.add-to-cart[onclick*="addToCart(${productId})"]`);
     if (button) {
@@ -141,7 +158,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
+    // Оформление заказа
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', () => {
+            if (cart.length === 0) return;
+            alert(`Заказ оформлен! Сумма: ${document.getElementById('cart-total-price').textContent} ₽`);
+            cart = [];
+            updateCart();
+            saveCart();
+            document.getElementById('cart-modal').style.display = 'none';
+        });
+    }
 
     // Добавляем обработчик для кнопки "Продолжить покупки"
     const continueShoppingBtn = document.getElementById('continue-shopping-btn');
