@@ -320,7 +320,7 @@ document.getElementById('auth-btn')?.scrollIntoView({ behavior: 'smooth', block:
 
         // Подтверждение заказа
 // Подтверждение заказа
-deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', function() {
+deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', function () {
     const deliveryType = deliveryModal.querySelector('input[name="delivery"]:checked').value;
     let deliveryAddress = '';
     let deliveryCost = 0;
@@ -353,22 +353,20 @@ deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', func
     currentUser.orders.unshift(newOrder);
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
 
-    // Очищаем корзину
+    // ✅ Очищаем корзину
     localStorage.removeItem('cart');
-    // Очистить глобальный массив cart
-    if (typeof cart !== 'undefined') {
-        cart.length = 0; // Очищаем массив
-    }
-    
-    // Обновляем корзину в интерфейсе
+    cart.length = 0; // Очистка корзины в переменной cart
+
+    // ✅ Обновление корзины в интерфейсе
     if (typeof updateCart === 'function') {
         updateCart();
     }
 
-    // Обновляем счётчик корзины
-    document.getElementById('cart-counter').textContent = '0';
+    // Обновление счётчика товаров в корзине
+    const cartCounter = document.getElementById('cart-counter');
+    if (cartCounter) cartCounter.textContent = '0';
 
-    // Закрываем модальные окна
+    // Закрытие модальных окон
     deliveryModal.style.display = 'none';
     document.body.removeChild(deliveryModal);
     cartModal.classList.add('hidden');
