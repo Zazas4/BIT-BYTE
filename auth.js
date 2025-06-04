@@ -94,7 +94,7 @@ if (currentUser.orders && currentUser.orders.length > 0) {
     ordersList.innerHTML = currentUser.orders.map(order => `
         <div class="order-item">
             <p><strong>Заказ #${order.id}</strong> (${new Date(order.date).toLocaleDateString()})</p>
-            <p>Сумма: ${order.total} ₽</p> <!-- Добавляем сумму -->
+            <p>Сумма: ${order.total} ₽</p> <!-- Добавляем вывод суммы -->
             <p>Статус: ${order.status || 'Завершен'}</p>
         </div>
     `).join('');
@@ -345,9 +345,9 @@ loginForm.addEventListener('submit', async function(e) {
             };
 
             // Обновляем данные пользователя
-            currentUser.orders = currentUser.orders || [];
-            currentUser.orders.unshift(newOrder);
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+currentUser.orders = currentUser.orders || [];
+currentUser.orders.unshift(newOrder);  // Добавляем новый заказ в начало массива
+localStorage.setItem('currentUser', JSON.stringify(currentUser));  // Сохраняем обновленного пользователя
             
             // Очищаем корзину
             localStorage.removeItem('cart');
