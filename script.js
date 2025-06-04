@@ -83,10 +83,6 @@ categoryButtons.forEach(button => {
 
     // Обработчик оформления заказа
 
-
-    // Инициализация обработчиков
-    handleCheckout();
-
     // Обработчик для кнопки "Показать вход"
     document.getElementById('show-register')?.addEventListener('click', function(e) {
         e.preventDefault();
