@@ -56,19 +56,6 @@ categoryButtons.forEach(button => {
             `;
             productsContainer.appendChild(card);
         });
-        document.getElementById('checkout-btn').addEventListener('click', function() {
-    if (cart.length === 0) {
-        alert('Корзина пуста!');
-        return;
-    }
-
-    // Подтверждение и оформление заказа
-    localStorage.removeItem('cart');
-    cart.length = 0;
-    updateCart(); // Важно обновить корзину
-
-    alert('Заказ оформлен!');
-});
 
         // Добавляем обработчики событий для новых кнопок
         document.querySelectorAll('.add-to-cart, .buy-now').forEach(button => {
@@ -95,6 +82,139 @@ categoryButtons.forEach(button => {
     }
 
     // Обработчик оформления заказа
+    function handleCheckout() {
+        const checkoutBtn = document.getElementById('checkout-btn');
+        if (!checkoutBtn) return;
+
+        checkoutBtn.addEventListener('click', function() {
+        try {
+    const rawCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    cartItems = Array.isArray(rawCart) ? rawCart : [];
+} catch (e) {
+    console.warn('Ошибка чтения корзины:', e);
+    cartItems = [];
+    localStorage.setItem('cart', '[]');
+}
+            if (cartItems.length === 0) {
+                alert('Ваша корзина пуста');
+                return;
+            }
+
+            if (!checkAuth()) return;
+
+            // Создаем модальное окно выбора способа получения
+            const deliveryModal = document.createElement('div');
+            deliveryModal.id = 'delivery-modal';
+            deliveryModal.className = 'modal';
+            deliveryModal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h2>Способ получения</h2>
+                    <div class="delivery-options">
+                        <div class="delivery-option">
+                            <input type="radio" id="pickup" name="delivery" value="pickup" checked>
+                            <label for="pickup">
+                                <h3>Самовывоз</h3>
+                                <p>Заберите ваш заказ из нашего магазина</p>
+                                <p class="price">Бесплатно</p>
+                            </label>
+                        </div>
+                        <div class="delivery-option">
+                            <input type="radio" id="delivery" name="delivery" value="delivery">
+                            <label for="delivery">
+                                <h3>Доставка</h3>
+                                <p>Курьерская доставка до двери</p>
+                                <p class="price">500 ₽</p>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="delivery-address-container" class="hidden">
+                        <h3>Адрес доставки</h3>
+                        <input type="text" id="delivery-address" placeholder="Введите ваш адрес" required>
+                    </div>
+                    <button id="confirm-order-btn" class="confirm-order-btn">Подтвердить заказ</button>
+                </div>
+            `;
+            document.body.appendChild(deliveryModal);
+
+            // Показываем модальное окно
+            deliveryModal.style.display = 'block';
+            document.getElementById('cart-modal').classList.add('hidden');
+
+            // Обработка выбора способа доставки
+            deliveryModal.querySelectorAll('input[name="delivery"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const addressContainer = deliveryModal.querySelector('#delivery-address-container');
+                    addressContainer.classList.toggle('hidden', this.value !== 'delivery');
+                });
+            });
+
+            // Закрытие модального окна
+            deliveryModal.querySelector('.close-modal').addEventListener('click', function() {
+                deliveryModal.style.display = 'none';
+                document.body.removeChild(deliveryModal);
+                document.getElementById('cart-modal').classList.remove('hidden');
+            });
+
+            // Подтверждение заказа
+            deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', function() {
+                const deliveryType = deliveryModal.querySelector('input[name="delivery"]:checked').value;
+                let deliveryAddress = '';
+                let deliveryCost = 0;
+
+                if (deliveryType === 'delivery') {
+                    deliveryAddress = deliveryModal.querySelector('#delivery-address').value.trim();
+                    if (!deliveryAddress) {
+                        alert('Пожалуйста, укажите адрес доставки');
+                        return;
+                    }
+                    deliveryCost = 500;
+                }
+
+                const cartTotal = parseInt(document.getElementById('cart-total-price').textContent) || 0;
+                const totalWithDelivery = cartTotal + deliveryCost;
+
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (!currentUser) {
+                    alert('Ошибка авторизации. Пожалуйста, войдите снова.');
+                    deliveryModal.style.display = 'none';
+                    document.body.removeChild(deliveryModal);
+                    document.getElementById('auth-btn').click();
+                    return;
+                }
+
+                const newOrder = {
+                    id: Date.now(),
+                    date: new Date().toISOString(),
+                    total: totalWithDelivery,
+                    deliveryType: deliveryType,
+                    deliveryAddress: deliveryAddress,
+                    deliveryCost: deliveryCost,
+                    status: deliveryType === 'pickup' ? 'Готов к выдаче' : 'В обработке',
+                    items: cartItems
+                };
+
+                // Обновляем данные пользователя
+                currentUser.orders = currentUser.orders || [];
+                currentUser.orders.unshift(newOrder);
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // Очищаем корзину
+                localStorage.removeItem('cart');
+                document.getElementById('cart-counter').textContent = '0';
+                deliveryModal.style.display = 'none';
+                document.body.removeChild(deliveryModal);
+                document.getElementById('cart-modal').classList.add('hidden');
+                
+                alert(`Заказ #${newOrder.id} успешно оформлен! ${deliveryType === 'pickup' 
+                    ? 'Вы можете забрать его в нашем магазине.' 
+                    : 'Курьер свяжется с вами для уточнения деталей.'}`);
+            });
+        });
+    }
+
+    // Инициализация обработчиков
+    handleCheckout();
 
     // Обработчик для кнопки "Показать вход"
     document.getElementById('show-register')?.addEventListener('click', function(e) {
@@ -103,27 +223,6 @@ categoryButtons.forEach(button => {
         document.getElementById('auth-dropdown').classList.add('hidden');
     });
 });
-document.addEventListener('DOMContentLoaded', function() {
-    // Обработчик кнопки добавления товара в корзину
-    const addToCartButtons = document.querySelectorAll('.add-to-cart');
-    addToCartButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const productId = parseInt(this.dataset.productId); // Получаем ID товара
-            addToCart(productId);
-        });
-    });
-
-    // Открытие корзины
-    document.getElementById('cart-btn').addEventListener('click', function() {
-        document.getElementById('cart-modal').classList.remove('hidden');
-    });
-
-    // Закрытие корзины
-    document.querySelector('.close-modal').addEventListener('click', function() {
-        document.getElementById('cart-modal').classList.add('hidden');
-    });
-});
-
 document.addEventListener('DOMContentLoaded', () => {
     const burger = document.getElementById('burger-toggle');
     const menu = document.getElementById('mobile-category-menu');
