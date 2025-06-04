@@ -352,13 +352,15 @@ document.getElementById('checkout-btn')?.addEventListener('click', function () {
         currentUser.orders.unshift(newOrder);
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
 
-        // Очищаем корзину
+        // ✅ Очищаем корзину в localStorage и в интерфейсе
         localStorage.removeItem('cart');
-        if (typeof cart !== 'undefined') cart.length = 0;
-        if (typeof updateCart === 'function') updateCart();
+        cart.length = 0;  // Очистка корзины в переменной
+        updateCart();  // Обновление интерфейса корзины
+
+        // Обновление счётчика товаров в корзине
         document.getElementById('cart-counter').textContent = '0';
 
-        // Закрываем модалки
+        // Закрываем модальные окна
         deliveryModal.remove();
         cartModal?.classList.add('hidden');
 
