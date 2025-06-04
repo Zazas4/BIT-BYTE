@@ -54,61 +54,42 @@ function addToCart(productId, buyNow = false) {
     }
 }
 
-// вызвать в начале
-loadCart();
-// Функция удаления из корзины
 function removeFromCart(productId) {
     cart = cart.filter(item => item.id !== productId);
     updateCart();
     saveCart();
 }
 
-// Функция обновления отображения корзины
 function updateCart() {
-    console.log("Обновление корзины, содержимое:", cart); // Логируем содержимое корзины
-
-    // Обновляем счётчик товаров
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const cartCounter = document.getElementById('cart-counter');
-    if (cartCounter) cartCounter.textContent = totalItems;
-
-    // Обновляем содержимое корзины в модалке
     const cartItemsElement = document.getElementById('cart-items');
-    if (cartItemsElement) {
-        cartItemsElement.innerHTML = '';  // Очистка корзины в DOM
-
-        // Если корзина пуста
-        if (cart.length === 0) {
-            cartItemsElement.innerHTML = '<p>Корзина пуста</p>';  // Сообщение, если корзина пуста
-            const totalPriceElement = document.getElementById('cart-total-price');
-            if (totalPriceElement) totalPriceElement.textContent = '0 ₽';
-            return;
-        }
-
-        // Если корзина не пуста, отобразим товары
-        cart.forEach(item => {
-            const cartItemElement = document.createElement('div');
-            cartItemElement.className = 'cart-item';
-            cartItemElement.innerHTML = `
-                <img src="${item.image || 'default-image-path'}" alt="${item.name}">
-                <div class="cart-item-info">
-                    <div>${item.name}</div>
-                    <div>${item.quantity} × ${item.price.toLocaleString()} ₽</div>
-                </div>
-                <div class="cart-item-price">${(item.quantity * item.price).toLocaleString()} ₽</div>
-                <button class="cart-item-remove" onclick="removeFromCart(${item.id})">×</button>
-            `;
-            cartItemsElement.appendChild(cartItemElement);
-        });
-
-        // Обновляем итоговую сумму
-        const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const totalPriceElement = document.getElementById('cart-total-price');
-        if (totalPriceElement) totalPriceElement.textContent = totalPrice.toLocaleString() + ' ₽';
+    const totalPriceElement = document.getElementById('cart-total-price');
+    
+    cartItemsElement.innerHTML = '';
+    if (cart.length === 0) {
+        cartItemsElement.innerHTML = '<p>Корзина пуста</p>';
+        totalPriceElement.textContent = '0 ₽';
+        return;
     }
+
+    cart.forEach(item => {
+        const cartItemElement = document.createElement('div');
+        cartItemElement.className = 'cart-item';
+        cartItemElement.innerHTML = `
+            <div>${item.name}</div>
+            <div>${item.quantity} × ${item.price}</div>
+            <button onclick="removeFromCart(${item.id})">Удалить</button>
+        `;
+        cartItemsElement.appendChild(cartItemElement);
+    });
+
+    const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    totalPriceElement.textContent = totalPrice.toLocaleString() + ' ₽';
 }
 
-// Функция анимации добавления в корзину
+function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
 function showAddToCartAnimation(productId) {
     const button = document.querySelector(`.add-to-cart[onclick*="addToCart(${productId})"]`);
     if (button) {
