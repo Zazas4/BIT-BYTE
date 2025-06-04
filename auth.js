@@ -70,45 +70,39 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-
-// Отображение информации в личном кабинете
-function showAccountInfo() {
-    const accountInfo = accountModal.querySelector('#account-info');
-    const ordersList = accountModal.querySelector('#orders-list');
-    
-    if (!accountInfo || !ordersList) {
-        console.error('Элементы личного кабинета не найдены');
-        return;
-    }
-
-    if (currentUser) {
-        accountInfo.innerHTML = `
-            <div class="user-info">
-                <p><strong>Имя:</strong> ${currentUser.name || 'Не указано'}</p>
-                <p><strong>Email:</strong> ${currentUser.email}</p>
-                <p><strong>Дата регистрации:</strong> ${currentUser.registrationDate || new Date().toLocaleDateString()}</p>
-            </div>
-        `;
+    // Отображение информации в личном кабинете
+    function showAccountInfo() {
+        const accountInfo = accountModal.querySelector('#account-info');
+        const ordersList = accountModal.querySelector('#orders-list');
         
-        // Сумма всех заказов
-        const totalOrdersAmount = currentUser.orders.reduce((total, order) => total + order.total, 0);
-        accountInfo.innerHTML += `
-            <p><strong>Общая сумма заказов:</strong> ${totalOrdersAmount} ₽</p>
-        `;
-        
-        if (currentUser.orders && currentUser.orders.length > 0) {
-            ordersList.innerHTML = currentUser.orders.map(order => `
-                <div class="order-item">
-                    <p><strong>Заказ #${order.id}</strong> (${new Date(order.date).toLocaleDateString()})</p>
-                    <p>Сумма: ${order.total} ₽</p>
-                    <p>Статус: ${order.status || 'Завершен'}</p>
+        if (!accountInfo || !ordersList) {
+            console.error('Элементы личного кабинета не найдены');
+            return;
+        }
+
+        if (currentUser) {
+            accountInfo.innerHTML = `
+                <div class="user-info">
+                    <p><strong>Имя:</strong> ${currentUser.name || 'Не указано'}</p>
+                    <p><strong>Email:</strong> ${currentUser.email}</p>
+                    <p><strong>Дата регистрации:</strong> ${currentUser.registrationDate || new Date().toLocaleDateString()}</p>
                 </div>
-            `).join('');
-        } else {
-            ordersList.innerHTML = '<p>У вас пока нет заказов</p>';
+            `;
+            
+            if (currentUser.orders && currentUser.orders.length > 0) {
+                ordersList.innerHTML = currentUser.orders.map(order => `
+                    <div class="order-item">
+                        <p><strong>Заказ #${order.id}</strong> (${new Date(order.date).toLocaleDateString()})</p>
+                        <p>Сумма: ${order.total} ₽</p>
+                        <p>Статус: ${order.status || 'Завершен'}</p>
+                    </div>
+                `).join('');
+            } else {
+                ordersList.innerHTML = '<p>У вас пока нет заказов</p>';
+            }
         }
     }
-}
+
     // Инициализация
     updateAuthButton();
 
@@ -257,6 +251,7 @@ loginForm.addEventListener('submit', async function(e) {
     document.getElementById('checkout-btn')?.addEventListener('click', function() {
         const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
         if (cartItems.length === 0) {
+            alert('Ваша корзина пуста');
             return;
         }
 
