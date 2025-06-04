@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('cart-modal').style.display = 'none';
         });
     }
+});
 
 
 document.addEventListener('DOMContentLoaded', () => {
