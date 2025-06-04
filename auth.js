@@ -247,6 +247,7 @@ loginForm.addEventListener('submit', async function(e) {
     }
 });
 
+// Обработчик оформления заказа
 document.getElementById('checkout-btn')?.addEventListener('click', function () {
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
     if (!Array.isArray(cart) || cart.length === 0) {
@@ -346,7 +347,7 @@ document.getElementById('checkout-btn')?.addEventListener('click', function () {
             items: cart
         };
 
-        // Сохраняем заказ
+        // Сохраняем заказ в историю пользователя
         currentUser.orders = currentUser.orders || [];
         currentUser.orders.unshift(newOrder);
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
