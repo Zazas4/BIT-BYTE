@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Отображение информации в личном кабинете
-   // Отображение информации в личном кабинете
+// Отображение информации в личном кабинете
 function showAccountInfo() {
     const accountInfo = accountModal.querySelector('#account-info');
     const ordersList = accountModal.querySelector('#orders-list');
@@ -103,7 +103,6 @@ function showAccountInfo() {
         }
     }
 }
-
     // Инициализация
     updateAuthButton();
 
