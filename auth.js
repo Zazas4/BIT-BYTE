@@ -9,7 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const registerForm = document.getElementById('register-form');
     const closeModalButtons = document.querySelectorAll('.close-modal');
     const cartModal = document.getElementById('cart-modal');
-    
+    if (cartModal && !cartModal.classList.contains('hidden')) {
+    cartModal.classList.add('hidden');
+}
     // Создаем модальное окно личного кабинета
     const accountModal = document.createElement('div');
     accountModal.id = 'account-modal';
@@ -348,32 +350,32 @@ deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', func
         items: cart
     };
 
-    // Сохраняем заказ в историю пользователя
-    currentUser.orders = currentUser.orders || [];
-    currentUser.orders.unshift(newOrder);
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+// Сохраняем заказ в историю пользователя
+currentUser.orders = currentUser.orders || [];
+currentUser.orders.unshift(newOrder);
+localStorage.setItem('currentUser', JSON.stringify(currentUser));
 
-    // ✅ Очищаем корзину
-    localStorage.removeItem('cart');
-    cart.length = 0; // Очистка корзины в переменной cart
+// ✅ Очищаем корзину
+localStorage.removeItem('cart');
+cart.length = 0; // Очистка корзины в переменной cart
 
-    // ✅ Обновление корзины в интерфейсе
-    if (typeof updateCart === 'function') {
-        updateCart();
-    }
+// ✅ Обновление корзины в интерфейсе
+if (typeof updateCart === 'function') {
+    updateCart();
+}
 
-    // Обновление счётчика товаров в корзине
-    const cartCounter = document.getElementById('cart-counter');
-    if (cartCounter) cartCounter.textContent = '0';
+// Обновление счётчика товаров в корзине
+const cartCounter = document.getElementById('cart-counter');
+if (cartCounter) cartCounter.textContent = '0';
 
-    // Закрытие модальных окон
-    deliveryModal.style.display = 'none';
-    document.body.removeChild(deliveryModal);
-    cartModal.classList.add('hidden');
+// Закрытие модальных окон
+deliveryModal.style.display = 'none';
+document.body.removeChild(deliveryModal);
+cartModal.classList.add('hidden');
 
-    alert(`Заказ #${newOrder.id} успешно оформлен! ${deliveryType === 'pickup'
-        ? 'Вы можете забрать его в нашем магазине.'
-        : 'Курьер свяжется с вами для уточнения деталей.'}`);
+alert(`Заказ #${newOrder.id} успешно оформлен! ${deliveryType === 'pickup'
+    ? 'Вы можете забрать его в нашем магазине.'
+    : 'Курьер свяжется с вами для уточнения деталей.'}`);
 });
     // Валидация email
     function validateEmail(email) {
