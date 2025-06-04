@@ -90,17 +90,17 @@ function showAccountInfo() {
             </div>
         `;
         
-        if (currentUser.orders && currentUser.orders.length > 0) {
-            ordersList.innerHTML = currentUser.orders.map(order => `
-                <div class="order-item">
-                    <p><strong>Заказ #${order.id}</strong> (${new Date(order.date).toLocaleDateString()})</p>
-                    <p>Сумма: ${order.total} ₽</p>
-                    <p>Статус: ${order.status || 'Завершен'}</p>
-                </div>
-            `).join('');
-        } else {
-            ordersList.innerHTML = '<p>У вас пока нет заказов</p>';
-        }
+if (currentUser.orders && currentUser.orders.length > 0) {
+    ordersList.innerHTML = currentUser.orders.map(order => `
+        <div class="order-item">
+            <p><strong>Заказ #${order.id}</strong> (${new Date(order.date).toLocaleDateString()})</p>
+            <p>Сумма: ${order.total} ₽</p> <!-- Добавляем сумму -->
+            <p>Статус: ${order.status || 'Завершен'}</p>
+        </div>
+    `).join('');
+} else {
+    ordersList.innerHTML = '<p>У вас пока нет заказов</p>';
+}
     }
 }
     // Инициализация
