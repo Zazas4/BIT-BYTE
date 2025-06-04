@@ -56,6 +56,19 @@ categoryButtons.forEach(button => {
             `;
             productsContainer.appendChild(card);
         });
+        document.getElementById('checkout-btn').addEventListener('click', function() {
+    if (cart.length === 0) {
+        alert('Корзина пуста!');
+        return;
+    }
+
+    // Подтверждение и оформление заказа
+    localStorage.removeItem('cart');
+    cart.length = 0;
+    updateCart(); // Важно обновить корзину
+
+    alert('Заказ оформлен!');
+});
 
         // Добавляем обработчики событий для новых кнопок
         document.querySelectorAll('.add-to-cart, .buy-now').forEach(button => {
