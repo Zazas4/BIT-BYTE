@@ -138,29 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Оформление заказа
-    const checkoutBtn = document.getElementById('checkout-btn');
-    if (checkoutBtn) {
-        checkoutBtn.addEventListener('click', () => {
-    if (cart.length === 0) return;
-
-    if (!currentUser) {
-        // Показать окно авторизации
-        const authDropdown = document.getElementById('auth-dropdown');
-        if (authDropdown) authDropdown.classList.add('show');
-
-        alert('Сначала войдите в аккаунт, чтобы оформить заказ.');
-        return;
-    }
-
-    // Авторизован — оформить заказ
-    alert(`Заказ оформлен! Сумма: ${document.getElementById('cart-total-price').textContent} ₽`);
-    cart = [];
-    updateCart();
-    saveCart();
-    document.getElementById('cart-modal').style.display = 'none';
-});
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     loadCart();
