@@ -82,23 +82,24 @@ categoryButtons.forEach(button => {
     }
 
     // Обработчик оформления заказа
-    function handleCheckout() {
-        const checkoutBtn = document.getElementById('checkout-btn');
-        if (!checkoutBtn) return;
+function handleCheckout() {
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (!checkoutBtn) return;
 
-        checkoutBtn.addEventListener('click', function() {
-        try {
-    const rawCart = JSON.parse(localStorage.getItem('cart') || '[]');
-    cartItems = Array.isArray(rawCart) ? rawCart : [];
-} catch (e) {
-    console.warn('Ошибка чтения корзины:', e);
-    cartItems = [];
-    localStorage.setItem('cart', '[]');
-}
-            if (cartItems.length === 0) {
-                alert('Ваша корзина пуста');
-                return;
-            }
+    checkoutBtn.addEventListener('click', function() {
+        const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+        if (cartItems.length === 0) {
+            alert('Ваша корзина пуста');
+            return;
+        }
+
+        // Проверка на авторизацию
+        const currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        if (!currentUser) {
+            alert('Для выполнения этого действия необходимо войти в систему');
+            document.getElementById('auth-btn').click();  // Открытие модального окна входа
+            return;
+        }
 
             if (!checkAuth()) return;
 
