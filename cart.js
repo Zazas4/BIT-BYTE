@@ -1,5 +1,5 @@
 // cart.js
-
+const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 // Проверка и инициализация массива products
 if (typeof products === 'undefined') {
     console.error('Products array is not defined!');
