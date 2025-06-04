@@ -65,18 +65,27 @@ function removeFromCart(productId) {
 
 // Функция обновления отображения корзины
 function updateCart() {
+    console.log("Обновление корзины, содержимое:", cart); // Логируем содержимое корзины
+
+    // Обновляем счётчик товаров
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const cartCounter = document.getElementById('cart-counter');
+    if (cartCounter) cartCounter.textContent = totalItems;
+
+    // Обновляем содержимое корзины в модалке
     const cartItemsElement = document.getElementById('cart-items');
     if (cartItemsElement) {
         cartItemsElement.innerHTML = '';  // Очистка корзины в DOM
-        
+
+        // Если корзина пуста
         if (cart.length === 0) {
-            cartItemsElement.innerHTML = '<p>Корзина пуста</p>';  // Сообщение о пустой корзине
+            cartItemsElement.innerHTML = '<p>Корзина пуста</p>';  // Сообщение, если корзина пуста
             const totalPriceElement = document.getElementById('cart-total-price');
-            if (totalPriceElement) totalPriceElement.textContent = '0';
+            if (totalPriceElement) totalPriceElement.textContent = '0 ₽';
             return;
         }
-        
-        // Если корзина не пуста, отображаем товары
+
+        // Если корзина не пуста, отобразим товары
         cart.forEach(item => {
             const cartItemElement = document.createElement('div');
             cartItemElement.className = 'cart-item';
@@ -95,7 +104,7 @@ function updateCart() {
         // Обновляем итоговую сумму
         const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const totalPriceElement = document.getElementById('cart-total-price');
-        if (totalPriceElement) totalPriceElement.textContent = totalPrice.toLocaleString();
+        if (totalPriceElement) totalPriceElement.textContent = totalPrice.toLocaleString() + ' ₽';
     }
 }
 
