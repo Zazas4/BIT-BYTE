@@ -324,7 +324,7 @@ if (cartModal && !cartModal.classList.contains('hidden')) {
         });
 
 
-// Подтверждение заказа
+
 // Подтверждение заказа
 deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', function () {
     const deliveryType = deliveryModal.querySelector('input[name="delivery"]:checked').value;
@@ -365,20 +365,21 @@ deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', func
     // Лог: Проверяем содержимое корзины перед очисткой
     console.log("Корзина перед очисткой:", cart);
 
-// Очистка корзины
+// Очистка корзины и обновление интерфейса
 localStorage.removeItem('cart');
 
+// Очистка глобальной переменной cart
 if (typeof window.cart !== 'undefined') {
-  window.cart.length = 0;
+    window.cart.length = 0;
 }
 
+// Обновление интерфейса корзины
 if (typeof updateCart === 'function') {
-  updateCart();
+    updateCart();
 }
 
-
-    // Обновление счётчика товаров в корзине
-    document.getElementById('cart-counter').textContent = '0';
+// Обновление счётчика товаров в корзине
+document.getElementById('cart-counter').textContent = '0';
 
     // Закрытие модальных окон
     deliveryModal.style.display = 'none';
