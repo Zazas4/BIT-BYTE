@@ -9,9 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const registerForm = document.getElementById('register-form');
     const closeModalButtons = document.querySelectorAll('.close-modal');
     const cartModal = document.getElementById('cart-modal');
-    if (cartModal && !cartModal.classList.contains('hidden')) {
-    cartModal.classList.add('hidden');
-}
+    
     // Создаем модальное окно личного кабинета
     const accountModal = document.createElement('div');
     accountModal.id = 'account-modal';
@@ -251,24 +249,18 @@ loginForm.addEventListener('submit', async function(e) {
 
     // Оформление заказа
     document.getElementById('checkout-btn')?.addEventListener('click', function() {
-const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-if (!Array.isArray(cart) || cart.length === 0) {
-    alert('Корзина пуста или повреждена.');
-    return;
-}
-
-        if (!currentUser) {
-authDropdown.classList.remove('hidden');
-authDropdown.classList.add('show');
-
-// Прокрутка к кнопке входа (по желанию)
-document.getElementById('auth-btn')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+        if (cartItems.length === 0) {
+            alert('Ваша корзина пуста');
             return;
         }
-const cartModal = document.getElementById('cart-modal');
-if (cartModal && !cartModal.classList.contains('hidden')) {
-    cartModal.classList.add('hidden');
-}
+
+        if (!currentUser) {
+            alert('Пожалуйста, войдите в систему для оформления заказа');
+            authDropdown.classList.add('show');
+            return;
+        }
+
         // Создаем модальное окно выбора способа доставки
         const deliveryModal = document.createElement('div');
         deliveryModal.id = 'delivery-modal';
@@ -323,64 +315,53 @@ if (cartModal && !cartModal.classList.contains('hidden')) {
             cartModal.classList.remove('hidden');
         });
 
+        // Подтверждение заказа
+        deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', function() {
+            const deliveryType = deliveryModal.querySelector('input[name="delivery"]:checked').value;
+            let deliveryAddress = '';
+            let deliveryCost = 0;
 
+            if (deliveryType === 'delivery') {
+                deliveryAddress = deliveryModal.querySelector('#delivery-address').value.trim();
+                if (!deliveryAddress) {
+                    alert('Пожалуйста, укажите адрес доставки');
+                    return;
+                }
+                deliveryCost = 500;
+            }
 
-// Подтверждение заказа
-deliveryModal.querySelector('#confirm-order-btn').addEventListener('click', function () {
-    const deliveryType = deliveryModal.querySelector('input[name="delivery"]:checked').value;
-    let deliveryAddress = '';
-    let deliveryCost = 0;
+            const cartTotal = parseInt(document.getElementById('cart-total-price').textContent) || 0;
+            const totalWithDelivery = cartTotal + deliveryCost;
 
-    if (deliveryType === 'delivery') {
-        deliveryAddress = deliveryModal.querySelector('#delivery-address').value.trim();
-        if (!deliveryAddress) {
-            alert('Пожалуйста, укажите адрес доставки');
-            return;
-        }
-        deliveryCost = 500;
-    }
+            const newOrder = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                total: totalWithDelivery,
+                deliveryType: deliveryType,
+                deliveryAddress: deliveryAddress,
+                deliveryCost: deliveryCost,
+                status: deliveryType === 'pickup' ? 'Готов к выдаче' : 'В обработке',
+                items: cartItems
+            };
 
-    const itemsTotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
-    const totalWithDelivery = itemsTotal + deliveryCost;
+            // Обновляем данные пользователя
+            currentUser.orders = currentUser.orders || [];
+            currentUser.orders.unshift(newOrder);
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Очищаем корзину
+            localStorage.removeItem('cart');
+            document.getElementById('cart-counter').textContent = '0';
+            deliveryModal.style.display = 'none';
+            document.body.removeChild(deliveryModal);
+            cartModal.classList.add('hidden');
+            
+            alert(`Заказ #${newOrder.id} успешно оформлен! ${deliveryType === 'pickup' 
+                ? 'Вы можете забрать его в нашем магазине.' 
+                : 'Курьер свяжется с вами для уточнения деталей.'}`);
+        });
+    });
 
-    const newOrder = {
-        id: Date.now(),
-        date: new Date().toISOString(),
-        total: totalWithDelivery,
-        deliveryType,
-        deliveryAddress,
-        deliveryCost,
-        status: deliveryType === 'pickup' ? 'Готов к выдаче' : 'В обработке',
-        items: cart
-    };
-
-    // Сохраняем заказ в историю пользователя
-    currentUser.orders = currentUser.orders || [];
-    currentUser.orders.unshift(newOrder);
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-
-    // Очистка корзины из localStorage и глобальной переменной cart
-localStorage.removeItem('cart');
-if (typeof window.cart !== 'undefined') {
-    window.cart.length = 0;
-}
-
-// Обновление интерфейса корзины
-if (typeof updateCart === 'function') {
-    updateCart();
-}
-
-// Обновление счётчика товаров в корзине
-document.getElementById('cart-counter').textContent = '0';
-    // Закрытие модальных окон
-    deliveryModal.style.display = 'none';
-    document.body.removeChild(deliveryModal);
-    cartModal.classList.add('hidden');
-
-    alert(`Заказ #${newOrder.id} успешно оформлен! ${deliveryType === 'pickup'
-        ? 'Вы можете забрать его в нашем магазине.'
-        : 'Курьер свяжется с вами для уточнения деталей.'}`);
-});
     // Валидация email
     function validateEmail(email) {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -398,5 +379,4 @@ document.addEventListener('click', function(e) {
     authDropdown.addEventListener('click', function(e) {
         e.stopPropagation();
     });
-});
 });
